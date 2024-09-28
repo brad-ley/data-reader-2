@@ -1,7 +1,8 @@
 import dash
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+# external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 graph_height = "325px"
 margin_vert = "0px"
 margin = dict(l=20, r=20, t=20, b=20)
@@ -10,7 +11,7 @@ app = dash.Dash(
     __name__,
     use_pages=True,
     prevent_initial_callbacks=True,
-    external_stylesheets=external_stylesheets,  # type: ignore
+    external_stylesheets=[dbc.themes.SLATE],  # type: ignore
     # suppress_callback_exceptions=True,
 )
 app.title = "DataLogger"
@@ -26,14 +27,18 @@ theme = {
 app.layout = html.Div(
     [
         dcc.Store(id="files", data={}, storage_type="session"),
-        html.H1("Multi-page app with Dash Pages"),
+        html.H1(
+            "Data-logging plotter software",
+            style={"margin": "20px 0px 0px 30px"},
+        ),
         html.Div(
             [
                 html.Div(
                     dcc.Link(
                         f"{page['name']} - {page['path']}",
                         href=page["relative_path"],
-                    )
+                    ),
+                    style={"margin": "0px 0px 0px 30px"},
                 )
                 for page in dash.page_registry.values()
             ]
