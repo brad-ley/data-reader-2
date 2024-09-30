@@ -1,6 +1,9 @@
 import dash
+import redis
 from dash import html, dcc
 import dash_bootstrap_components as dbc
+
+redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 # external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 graph_height = "325px"
@@ -10,9 +13,9 @@ margin = dict(l=20, r=20, t=20, b=20)
 app = dash.Dash(
     __name__,
     use_pages=True,
-    prevent_initial_callbacks=True,
+    # prevent_initial_callbacks=True,
     external_stylesheets=[dbc.themes.SLATE],  # type: ignore
-    # suppress_callback_exceptions=True,
+    suppress_callback_exceptions=True,
 )
 app.title = "DataLogger"
 app._favicon = "assets/favicon.ico"
@@ -26,7 +29,7 @@ theme = {
 
 app.layout = html.Div(
     [
-        dcc.Store(id="files", data={}, storage_type="session"),
+        dcc.Store(id="files", data={}, storage_type="local"),
         html.H1(
             "Data-logging plotter software",
             style={"margin": "20px 0px 0px 30px"},

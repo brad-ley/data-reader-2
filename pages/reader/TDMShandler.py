@@ -1,14 +1,17 @@
 import numpy as np
+import logging
+from nptdms.log import log_manager
+from nptdms import TdmsFile
+log_manager.set_level(logging.ERROR)
 
 # import required libraries
-from nptdms import TdmsFile
 
 
 class Channel:
     """Class for handling TDMS channel."""
 
     def __init__(self, channel):
-        self.channel: str = channel.name
+        self.name: str = channel.name
         self.data: np.ndarray = np.array(channel[:])
 
 
@@ -26,7 +29,7 @@ class Group:
             "==============================\n"
             f"Name: {self.name}\n"
             f"Time:{self.time}\n"
-            f"Channels:{dict([(ii.channel, ii.data) for ii in self.channels])}"
+            f"Channels:{dict([(ii.name, ii.data) for ii in self.channels])}"
         )
 
 
