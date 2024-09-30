@@ -69,5 +69,5 @@ def main(filename):
 
 if __name__ == "__main__":
     main(
-        "/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data/helium_log_EPR2409271103.tdms"
+        "/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data/helium_log_EPR2409301535.tdms"
     )

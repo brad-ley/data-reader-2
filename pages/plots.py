@@ -1,16 +1,14 @@
 import dash
+import time
 import pandas as pd
 from dash import (
-    ctx,
     dcc,
     html,
     Input,
     Output,
-    State,
     callback,
-    register_page,
-    ALL,
 )
+from math import ceil
 import plotly.express as px
 
 from pages.reader.data_read import redis_read
@@ -33,18 +31,16 @@ def make_fig():
 
 
 def update_fig(fig):
-    colors = {
-        'background': '#272b30',
-        'text': '#AAAAAA'
-    }
+    colors = {"background": "#272b30", "text": "#AAAAAA"}
     fig.update_layout({"uirevision": "foo"}, overwrite=True)
     fig.update_layout(margin=margin)
-    fig.update_layout({
-        'plot_bgcolor': colors['background'],
-        'paper_bgcolor': colors['background'],
-        'font': {
-            'color': colors['text']
-        }})
+    fig.update_layout(
+        {
+            "plot_bgcolor": colors["background"],
+            "paper_bgcolor": colors["background"],
+            "font": {"color": colors["text"]},
+        }
+    )
 
     return fig
 
@@ -61,6 +57,49 @@ layout = html.Div(
                 "horizontal-align": "middle",
             },
         ),
+        dcc.Interval(
+            id="interval-component",
+            interval=1 * 1000,  # in milliseconds
+            n_intervals=0,
+        ),
+        html.Div(
+            [
+                html.Div(
+                    [
+                        "Time window (min):",
+                    ],
+                    style={
+                        "display": "inline-block",
+                        "margin": "10px 0px 0px 30px",
+                        "width": "200px",
+                    },
+                ),
+                html.Div(
+                    [
+                        dcc.Slider(
+                            0,
+                            4,
+                            # step=1,
+                            id="x_axis_slider",
+                            value=2,
+                            marks={i: f"{10**(4-i)}" for i in range(5)},
+                            tooltip={
+                                "placement": "right",
+                                "always_visible": True,
+                                "transform": "expTime",
+                            },
+                            updatemode="drag",
+                            persistence=True,
+                        )
+                    ],
+                    style={
+                        "width": "70%",
+                        "display": "inline-block",
+                        "margin": "0px 0px -25px 0px",
+                    },
+                ),
+            ]
+        ),
     ],
 )
 
@@ -68,16 +107,28 @@ layout = html.Div(
 @callback(
     Output("plotter", "figure"),
     Input("files", "data"),
+    Input("x_axis_slider", "value"),
+    Input("interval-component", "n_intervals"),
 )
-def import_data(files):
+def import_data(files, time_start, n):
     fig = make_fig()
     filegroups = redis_read()
     for groups in filegroups:  # type: ignore
         for group in groups:
             dat = pd.DataFrame()
-            dat['time'] = group.time
+            dat["time"] = pd.to_datetime(group.time, utc=True).tz_convert(
+                "US/Pacific"
+            )
+            plot_start = dat["time"].iloc[-1] - pd.Timedelta(
+                minutes=10 ** (4 - time_start)
+            )
             for channel in group.channels:
                 dat[channel.name] = channel.data
-                fig.add_scatter(x=dat['time'], y=dat[channel.name], mode='lines', name=channel.name)
+                fig.add_scatter(
+                    x=dat["time"][dat["time"] > plot_start],
+                    y=dat[channel.name][dat["time"] > plot_start],
+                    mode="lines+markers",
+                    name=channel.name,
+                )
 
     return update_fig(fig)
