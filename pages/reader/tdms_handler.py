@@ -2,6 +2,7 @@ import numpy as np
 import logging
 from nptdms.log import log_manager
 from nptdms import TdmsFile
+
 log_manager.set_level(logging.ERROR)
 
 # import required libraries
@@ -69,5 +70,5 @@ def main(filename):
 
 if __name__ == "__main__":
     main(
-        "/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data/helium_log_EPR2409301535.tdms"
+        "/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data/pressure_log_EPR2409301659.tdms"
     )

@@ -1,4 +1,5 @@
 import dash
+import dash_daq as daq
 import time
 import pandas as pd
 from dash import (
@@ -93,12 +94,36 @@ layout = html.Div(
                         )
                     ],
                     style={
-                        "width": "70%",
+                        "width": "50%",
                         "display": "inline-block",
-                        "margin": "0px 0px -25px 0px",
+                        "margin": "0px 0px -25px -50px",
                     },
                 ),
             ]
+        ),
+        html.Div(
+            [
+                dcc.Markdown(
+                    r"Normalize LHe ($$\% \rightarrow \frac{\%}{100\%}$$): ",
+                    mathjax=True,
+                ),
+            ],
+            style={
+                "display": "inline-block",
+                "margin": "30px 0px 0px 30px",
+                "width": "250px",
+            },
+        ),
+        html.Div(
+            [
+                daq.BooleanSwitch(  # type: ignore
+                    id="normalize", on=True, color="#aaaaaa", persistence=True
+                ),
+            ],
+            style={
+                "display": "inline-block",
+                "margin": "0px 0px 0px -20px",
+            },
         ),
     ],
 )
@@ -108,9 +133,10 @@ layout = html.Div(
     Output("plotter", "figure"),
     Input("files", "data"),
     Input("x_axis_slider", "value"),
+    Input("normalize", "on"),
     Input("interval-component", "n_intervals"),
 )
-def import_data(files, time_start, n):
+def import_data(files, time_start, normalize, n):
     fig = make_fig()
     filegroups = redis_read()
     for groups in filegroups:  # type: ignore
@@ -124,6 +150,9 @@ def import_data(files, time_start, n):
             )
             for channel in group.channels:
                 dat[channel.name] = channel.data
+                if normalize and "LHe" in channel.name:
+                    # dat[channel.name] /= dat[channel.name].max()
+                    dat[channel.name] /= 100
                 fig.add_scatter(
                     x=dat["time"][dat["time"] > plot_start],
                     y=dat[channel.name][dat["time"] > plot_start],

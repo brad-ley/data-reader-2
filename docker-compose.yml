@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  data_logger:
+    build: ./
+    container_name: data_logger
+    ports:
+      - "8050:8050"
+    depends_on:
+      - redis

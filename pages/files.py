@@ -16,8 +16,8 @@ import redis
 import json
 
 # Initialize Redis client
-# redis_client = redis.Redis(host="redis", port=6379, db=0)
-redis_client = redis.Redis(host="localhost", port=6379, decode_responses=True)
+# redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
 
 register_page(
     __name__,
@@ -29,22 +29,6 @@ register_page(
 
 layout = html.Div(
     [
-        dcc.Upload(
-            id="upload-file",
-            children=html.Div(["Drag and drop or select .tdms file"]),
-            # Allow multiple files to be uploaded
-            multiple=True,
-            style={
-                "width": "30%",
-                "height": "60px",
-                "lineHeight": "60px",
-                "borderWidth": "1px",
-                "borderStyle": "dashed",
-                "borderRadius": "5px",
-                "textAlign": "center",
-                "margin": "10px 10px 0px 30px",
-            },
-        ),
         dcc.Input(
             id="log-path",
             placeholder="Copy and paste log folder",
@@ -52,8 +36,8 @@ layout = html.Div(
             value="/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data",
             style={
                 "background-color": "#272b30",
-                "height": "30px",
-                "width": "60%",
+                "height": "60px",
+                "width": "75%",
                 "justifyContent": "center",
                 "lineHeight": "60px",
                 "borderWidth": "1px",
@@ -62,6 +46,22 @@ layout = html.Div(
                 "textAlign": "center",
                 "margin": "10px 10px 0px 30px",
                 "color": "#aaaaaa",
+            },
+        ),
+        dcc.Upload(
+            id="upload-file",
+            children=html.Div(["Drag and drop or select .tdms file"]),
+            # Allow multiple files to be uploaded
+            multiple=True,
+            style={
+                "width": "75%",
+                "height": "60px",
+                "lineHeight": "60px",
+                "borderWidth": "1px",
+                "borderStyle": "dashed",
+                "borderRadius": "5px",
+                "textAlign": "center",
+                "margin": "10px 10px 0px 30px",
             },
         ),
         html.Div(id="output-file-upload"),
@@ -157,7 +157,9 @@ def send_files_to_reader(files):
     for key in files:
         full_path_files.append(str(P(files[key]).joinpath(P(key))))
 
-    redis_client.hset(name="files", key="files", value=json.dumps(full_path_files))
+    redis_client.hset(
+        name="files", key="files", value=json.dumps(full_path_files)
+    )
 
 
 @callback(
