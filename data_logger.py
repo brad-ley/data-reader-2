@@ -17,16 +17,9 @@ app = dash.Dash(
     # prevent_initial_callbacks=True,
     external_stylesheets=[dbc.themes.SLATE],  # type: ignore
     suppress_callback_exceptions=True,
+    title="DataLogger",
 )
-app.title = "DataLogger"
-app._favicon = "assets/favicon.ico"
-theme = {
-    "dark": True,
-    "detail": "#007439",
-    "primary": "#00EA64",
-    "secondary": "#6E6E6E",
-}
-
+app._favicon = "./favicon.ico"
 
 app.layout = html.Div(
     [
