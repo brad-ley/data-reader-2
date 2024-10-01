@@ -1,15 +1,9 @@
 import dash
 import dash_daq as daq
-import time
 import pandas as pd
-from dash import (
-    dcc,
-    html,
-    Input,
-    Output,
-    callback,
-)
-from math import ceil
+from dash import dcc, html, Input, Output, State, callback, ctx
+
+# from dash.exceptions import PreventUpdate
 import plotly.express as px
 
 from pages.reader.data_read import redis_read
@@ -60,7 +54,7 @@ layout = html.Div(
         ),
         dcc.Interval(
             id="interval-component",
-            interval=1 * 1000,  # in milliseconds
+            interval=60 * 1000,  # in milliseconds
             n_intervals=0,
         ),
         html.Div(
@@ -79,11 +73,11 @@ layout = html.Div(
                     [
                         dcc.Slider(
                             0,
-                            4,
+                            5,
                             # step=1,
                             id="x_axis_slider",
-                            value=2,
-                            marks={i: f"{10**(4-i)}" for i in range(5)},
+                            value=1,
+                            marks={i: f"1e+{(5-i)}" for i in range(6)},
                             tooltip={
                                 "placement": "right",
                                 "always_visible": True,
@@ -131,14 +125,20 @@ layout = html.Div(
 
 @callback(
     Output("plotter", "figure"),
+    Output("interval-component", "n_intervals"),
     Input("files", "data"),
     Input("x_axis_slider", "value"),
     Input("normalize", "on"),
     Input("interval-component", "n_intervals"),
+    # blocking=True,
 )
 def import_data(files, time_start, normalize, n):
+    print(ctx.triggered_id)
     fig = make_fig()
-    filegroups = redis_read()
+    if ctx.triggered_id == "interval-component":
+        filegroups = redis_read(write=True)
+    else:
+        filegroups = redis_read(write=False)
     for groups in filegroups:  # type: ignore
         for group in groups:
             dat = pd.DataFrame()
@@ -146,13 +146,19 @@ def import_data(files, time_start, normalize, n):
                 "US/Pacific"
             )
             plot_start = dat["time"].iloc[-1] - pd.Timedelta(
-                minutes=10 ** (4 - time_start)
+                minutes=10 ** (5 - time_start)
             )
             for channel in group.channels:
                 dat[channel.name] = channel.data
-                if normalize and "LHe" in channel.name:
+                if normalize and (
+                    "LHe" in channel.name or "%" in channel.name
+                ):
                     # dat[channel.name] /= dat[channel.name].max()
                     dat[channel.name] /= 100
+                # fig = px.line(
+                #     x=dat["time"][dat["time"] > plot_start],
+                #     y=dat[channel.name][dat["time"] > plot_start],
+                # )
                 fig.add_scatter(
                     x=dat["time"][dat["time"] > plot_start],
                     y=dat[channel.name][dat["time"] > plot_start],
@@ -160,4 +166,7 @@ def import_data(files, time_start, normalize, n):
                     name=channel.name,
                 )
 
-    return update_fig(fig)
+    # return fig
+    return update_fig(fig), 0
+    # else:
+    #     raise PreventUpdate()

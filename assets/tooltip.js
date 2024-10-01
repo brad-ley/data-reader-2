@@ -1,4 +1,4 @@
 window.dccFunctions = window.dccFunctions || {};
 window.dccFunctions.expTime = function (value) {
-  return (10 ** (4 - value)).toFixed(0);
+  return (10 ** (5 - value)).toExponential(2);
 };

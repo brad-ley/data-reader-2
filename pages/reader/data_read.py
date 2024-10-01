@@ -6,14 +6,14 @@ import json
 redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
 
 
-def redis_read():
-    files = redis_client.hget("files", "files")
+def redis_read(write):
+    files = redis_client.hget("files", "dict")
     if files:
         groups = []
         files = json.loads(files)
 
-        for file in files:  # type: ignore
-            groups.append(read(file))
+        for file, path in files.items():  # type: ignore
+            groups.append(read(file, path, write=write))
 
         if not groups:
             raise Exception("No files currently set!")
