@@ -70,5 +70,5 @@ def main(filename):
 
 if __name__ == "__main__":
     main(
-        "/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data/pressure_log_EPR2409301659.tdms"
+        "/Users/Brad/Desktop/test.tdms"
     )
