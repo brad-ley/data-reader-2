@@ -133,7 +133,6 @@ layout = html.Div(
     # blocking=True,
 )
 def import_data(files, time_start, normalize, n):
-    print(ctx.triggered_id)
     fig = make_fig()
     if ctx.triggered_id == "interval-component":
         filegroups = redis_read(write=True)
