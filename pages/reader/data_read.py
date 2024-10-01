@@ -22,7 +22,7 @@ def redis_read(write):
 
 
 def main():
-    redis_read()
+    redis_read(write=True)
 
 
 if __name__ == "__main__":

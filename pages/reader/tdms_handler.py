@@ -50,7 +50,7 @@ def read(file, path_or_url, write=True):
         local_filename = P(__file__).parent.parent.parent.joinpath(
             "data", file
         )
-        if write:
+        if write or not P(local_filename).exists():
             try:
                 urlparse(path_or_url)
                 r = requests.get(path_or_url, stream=True)
@@ -96,7 +96,7 @@ def read(file, path_or_url, write=True):
 
 
 def main(filename):
-    groups = read(filename)
+    groups = read(P(filename).name, P(filename).parent)
     print(*[str(ii) for ii in groups])
 
 

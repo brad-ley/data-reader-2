@@ -125,7 +125,6 @@ layout = html.Div(
 
 @callback(
     Output("plotter", "figure"),
-    Output("interval-component", "n_intervals"),
     Input("files", "data"),
     Input("x_axis_slider", "value"),
     Input("normalize", "on"),
@@ -138,6 +137,7 @@ def import_data(files, time_start, normalize, n):
         filegroups = redis_read(write=True)
     else:
         filegroups = redis_read(write=False)
+
     for groups in filegroups:  # type: ignore
         for group in groups:
             dat = pd.DataFrame()
@@ -148,24 +148,28 @@ def import_data(files, time_start, normalize, n):
                 minutes=10 ** (5 - time_start)
             )
             for channel in group.channels:
-                dat[channel.name] = channel.data
-                if normalize and (
-                    "LHe" in channel.name or "%" in channel.name
-                ):
-                    # dat[channel.name] /= dat[channel.name].max()
-                    dat[channel.name] /= 100
-                # fig = px.line(
-                #     x=dat["time"][dat["time"] > plot_start],
-                #     y=dat[channel.name][dat["time"] > plot_start],
-                # )
-                fig.add_scatter(
-                    x=dat["time"][dat["time"] > plot_start],
-                    y=dat[channel.name][dat["time"] > plot_start],
-                    mode="lines+markers",
-                    name=channel.name,
-                )
+                try:
+                    dat[channel.name] = channel.data
+                    if normalize and (
+                        "LHe" in channel.name or "%" in channel.name
+                    ):
+                        # dat[channel.name] /= dat[channel.name].max()
+                        dat[channel.name] /= 100
+                        # fig = px.line(
+                        #     x=dat["time"][dat["time"] > plot_start],
+                        #     y=dat[channel.name][dat["time"] > plot_start],
+                        # )
+                    fig.add_scatter(
+                        x=dat["time"][dat["time"] > plot_start],
+                        y=dat[channel.name][dat["time"] > plot_start],
+                        mode="lines+markers",
+                        name=channel.name,
+                    )
+                except ValueError:
+                    raise Exception(f"{groups} file has issues.")
+                    break
 
     # return fig
-    return update_fig(fig), 0
+    return update_fig(fig)
     # else:
     #     raise PreventUpdate()
