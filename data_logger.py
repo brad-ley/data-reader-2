@@ -49,6 +49,11 @@ app.layout = html.Div(
 )
 
 if __name__ == "__main__":
-    # app.run_server(debug=False)
+    # app.run_server(debug=True)
     print("Running at http://localhost:8050/files")
-    app.run_server(debug=False, host="0.0.0.0")
+    app.run_server(
+        debug=False,
+        host="0.0.0.0",
+        dev_tools_ui=False,
+        dev_tools_props_check=False,
+    )
