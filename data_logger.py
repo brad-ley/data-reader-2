@@ -27,6 +27,7 @@ app._favicon = "./favicon.ico"
 app.layout = html.Div(
     [
         dcc.Store(id="files", data={}, storage_type="local"),
+        # dcc.Store(id="just-started", data=True, storage_type="session"),
         dcc.Store(id="just-started", data=True, storage_type="memory"),
         html.H1(
             "Data-logging plotter software",
