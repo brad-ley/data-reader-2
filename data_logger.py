@@ -27,6 +27,7 @@ app._favicon = "./favicon.ico"
 app.layout = html.Div(
     [
         dcc.Store(id="files", data={}, storage_type="local"),
+        dcc.Store(id="just-started", data=True, storage_type="memory"),
         html.H1(
             "Data-logging plotter software",
             style={"margin": "20px 0px 0px 30px"},
@@ -49,4 +50,5 @@ app.layout = html.Div(
 
 if __name__ == "__main__":
     # app.run_server(debug=False)
-    app.run_server(debug=True, host="0.0.0.0")
+    print("Running at http://localhost:8050/files")
+    app.run_server(debug=False, host="0.0.0.0")

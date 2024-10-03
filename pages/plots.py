@@ -65,7 +65,7 @@ layout = html.Div(
                     ],
                     style={
                         "display": "inline-block",
-                        "margin": "10px 0px 0px 30px",
+                        "margin": "10px 0px 10px 30px",
                         "width": "200px",
                     },
                 ),
@@ -90,34 +90,68 @@ layout = html.Div(
                     style={
                         "width": "50%",
                         "display": "inline-block",
-                        "margin": "0px 0px -25px -50px",
+                        "margin": "0px 0px -15px -50px",
                     },
                 ),
             ]
         ),
         html.Div(
             [
-                dcc.Markdown(
-                    r"Normalize LHe ($$\% \rightarrow \frac{\%}{100\%}$$): ",
-                    mathjax=True,
+                html.Div(
+                    [
+                        dcc.Markdown(
+                            r"Plot LHe only:",
+                            mathjax=True,
+                        ),
+                    ],
+                    style={
+                        "display": "inline-block",
+                        "margin": "20px 5px 0px 30px",
+                        "width": "140px",
+                    },
+                ),
+                html.Div(
+                    [
+                        daq.BooleanSwitch(  # type: ignore
+                            id="lhe",
+                            on=True,
+                            color="#aaaaaa",
+                            persistence=True,
+                        ),
+                    ],
+                    style={
+                        "display": "inline-block",
+                        "margin": "15px 20px 0px -20px",
+                    },
+                ),
+                html.Div(
+                    [
+                        dcc.Markdown(
+                            r"Normalize LHe ($$\% \rightarrow \frac{\%}{100\%}$$): ",
+                            mathjax=True,
+                        ),
+                    ],
+                    style={
+                        "display": "inline-block",
+                        "margin": "20px 0px 0px 30px",
+                        "width": "250px",
+                    },
+                ),
+                html.Div(
+                    [
+                        daq.BooleanSwitch(  # type: ignore
+                            id="normalize",
+                            on=True,
+                            color="#aaaaaa",
+                            persistence=True,
+                        ),
+                    ],
+                    style={
+                        "display": "inline-block",
+                        "margin": "15px 0px 0px -20px",
+                    },
                 ),
             ],
-            style={
-                "display": "inline-block",
-                "margin": "30px 0px 0px 30px",
-                "width": "250px",
-            },
-        ),
-        html.Div(
-            [
-                daq.BooleanSwitch(  # type: ignore
-                    id="normalize", on=True, color="#aaaaaa", persistence=True
-                ),
-            ],
-            style={
-                "display": "inline-block",
-                "margin": "0px 0px 0px -20px",
-            },
         ),
     ],
 )
@@ -125,16 +159,21 @@ layout = html.Div(
 
 @callback(
     Output("plotter", "figure"),
+    Output("just-started", "data"),
     Input("files", "data"),
     Input("x_axis_slider", "value"),
     Input("normalize", "on"),
+    Input("lhe", "on"),
     Input("interval-component", "n_intervals"),
+    State("just-started", "data"),
     # blocking=True,
 )
-def import_data(files, time_start, normalize, n):
+def import_data(files, time_start, normalize, lhe, n, just_started):
     fig = make_fig()
-    if ctx.triggered_id == "interval-component":
+    print(just_started)
+    if ctx.triggered_id == "interval-component" or just_started:
         filegroups = redis_read(write=True)
+        just_started = False
     else:
         filegroups = redis_read(write=False)
 
@@ -160,17 +199,29 @@ def import_data(files, time_start, normalize, n):
                             #     x=dat["time"][dat["time"] > plot_start],
                             #     y=dat[channel.name][dat["time"] > plot_start],
                             # )
-                        fig.add_scatter(
-                            x=dat["time"][dat["time"] > plot_start],
-                            y=dat[channel.name][dat["time"] > plot_start],
-                            mode="lines+markers",
-                            name=channel.name,
-                        )
+                        if lhe:
+                            if "LHe" in channel.name or "%" in channel.name:
+                                fig.add_scatter(
+                                    x=dat["time"][dat["time"] > plot_start],
+                                    y=dat[channel.name][
+                                        dat["time"] > plot_start
+                                    ],
+                                    mode="lines+markers",
+                                    name=channel.name,
+                                )
+                        else:
+                            fig.add_scatter(
+                                x=dat["time"][dat["time"] > plot_start],
+                                y=dat[channel.name][dat["time"] > plot_start],
+                                mode="lines+markers",
+                                name=channel.name,
+                            )
+
                     except ValueError:
                         raise Exception(f"{groups} file has issues.")
                         break
 
         # return fig
-        return update_fig(fig)
+        return update_fig(fig), just_started
     else:
-        return no_update
+        return no_update, no_update

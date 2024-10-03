@@ -12,5 +12,6 @@ h6 {
 ::placeholder {
   /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: #aaaaaa;
+  /* color: #696a6d; */
   opacity: 1; /* Firefox */
 }

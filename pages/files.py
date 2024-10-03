@@ -36,7 +36,6 @@ layout = html.Div(
             id="url-path",
             placeholder="Copy and paste GDrive share url",
             type="text",
-            # value="https://drive.google.com/file/d/10ubxTjhWxwmDM48LwRTqKs_W2eEA811m/view?usp=share_link",
             style={
                 "background-color": "#272b30",
                 "height": "60px",
@@ -53,9 +52,10 @@ layout = html.Div(
         ),
         dcc.Input(
             id="log-path",
-            placeholder="Copy and paste log folder",
+            placeholder="Copy and paste file folder",
+            value="Copy and paste file folder (Disabled)",
+            disabled=True,
             type="text",
-            value="/Users/Brad/Library/CloudStorage/GoogleDrive-bdprice@ucsb.edu/My Drive/Research/Misc./Magnet data",
             style={
                 "background-color": "#272b30",
                 "height": "60px",
@@ -67,7 +67,7 @@ layout = html.Div(
                 "borderRadius": "5px",
                 "textAlign": "center",
                 "margin": "10px 10px 0px 30px",
-                "color": "#aaaaaa",
+                "color": "#696a6d",
             },
         ),
         dcc.Upload(
@@ -75,6 +75,7 @@ layout = html.Div(
             children=html.Div(["Drag and drop or select .tdms file"]),
             # Allow multiple files to be uploaded
             multiple=True,
+            disabled=True,
             style={
                 "width": "75%",
                 "height": "60px",
