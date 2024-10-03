@@ -189,8 +189,10 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                 for channel in group.channels:
                     try:
                         dat[channel.name] = channel.data
+                        if "Level (%)" in channel.name:
+                            channel.name = "LHe (%)"
                         if normalize and (
-                            "LHe" in channel.name or "%" in channel.name
+                            "LHe (%)" in channel.name
                         ):
                             # dat[channel.name] /= dat[channel.name].max()
                             dat[channel.name] /= 100
@@ -199,7 +201,7 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                             #     y=dat[channel.name][dat["time"] > plot_start],
                             # )
                         if lhe:
-                            if "LHe" in channel.name or "%" in channel.name:
+                            if "LHe (%)" in channel.name:
                                 fig.add_scatter(
                                     x=dat["time"][dat["time"] > plot_start],
                                     y=dat[channel.name][
