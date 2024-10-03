@@ -188,12 +188,10 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                 )
                 for channel in group.channels:
                     try:
-                        dat[channel.name] = channel.data
                         if "Level (%)" in channel.name:
                             channel.name = "LHe (%)"
-                        if normalize and (
-                            "LHe (%)" in channel.name
-                        ):
+                        dat[channel.name] = channel.data
+                        if normalize and ("LHe (%)" in channel.name):
                             # dat[channel.name] /= dat[channel.name].max()
                             dat[channel.name] /= 100
                             # fig = px.line(
