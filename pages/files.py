@@ -19,8 +19,8 @@ import requests
 import pyrfc6266
 
 # Initialize Redis client
-redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
-# redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
+# redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
 
 register_page(
     __name__,

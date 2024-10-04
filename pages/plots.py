@@ -95,64 +95,65 @@ layout = html.Div(
                 ),
             ]
         ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        dcc.Markdown(
-                            r"Plot LHe only:",
-                            mathjax=True,
-                        ),
-                    ],
-                    style={
-                        "display": "inline-block",
-                        "margin": "20px 5px 0px 30px",
-                        "width": "140px",
-                    },
-                ),
-                html.Div(
-                    [
-                        daq.BooleanSwitch(  # type: ignore
-                            id="lhe",
-                            on=True,
-                            color="#aaaaaa",
-                            persistence=True,
-                        ),
-                    ],
-                    style={
-                        "display": "inline-block",
-                        "margin": "15px 20px 0px -20px",
-                    },
-                ),
-                html.Div(
-                    [
-                        dcc.Markdown(
-                            r"Normalize LHe ($$\% \rightarrow \frac{\%}{100\%}$$): ",
-                            mathjax=True,
-                        ),
-                    ],
-                    style={
-                        "display": "inline-block",
-                        "margin": "20px 0px 0px 30px",
-                        "width": "250px",
-                    },
-                ),
-                html.Div(
-                    [
-                        daq.BooleanSwitch(  # type: ignore
-                            id="normalize",
-                            on=True,
-                            color="#aaaaaa",
-                            persistence=True,
-                        ),
-                    ],
-                    style={
-                        "display": "inline-block",
-                        "margin": "15px 0px 0px -20px",
-                    },
-                ),
-            ],
-        ),
+        html.Div(id="plots"),
+        # html.Div(
+        #     [
+        #         html.Div(
+        #             [
+        #                 dcc.Markdown(
+        #                     r"Plot LHe only:",
+        #                     mathjax=True,
+        #                 ),
+        #             ],
+        #             style={
+        #                 "display": "inline-block",
+        #                 "margin": "20px 5px 0px 30px",
+        #                 "width": "140px",
+        #             },
+        #         ),
+        #         html.Div(
+        #             [
+        #                 daq.BooleanSwitch(  # type: ignore
+        #                     id="lhe",
+        #                     on=True,
+        #                     color="#aaaaaa",
+        #                     persistence=True,
+        #                 ),
+        #             ],
+        #             style={
+        #                 "display": "inline-block",
+        #                 "margin": "15px 20px 0px -20px",
+        #             },
+        #         ),
+        #         html.Div(
+        #             [
+        #                 dcc.Markdown(
+        #                     r"Normalize LHe ($$\% \rightarrow \frac{\%}{100\%}$$): ",
+        #                     mathjax=True,
+        #                 ),
+        #             ],
+        #             style={
+        #                 "display": "inline-block",
+        #                 "margin": "20px 0px 0px 30px",
+        #                 "width": "250px",
+        #             },
+        #         ),
+        #         html.Div(
+        #             [
+        #                 daq.BooleanSwitch(  # type: ignore
+        #                     id="normalize",
+        #                     on=True,
+        #                     color="#aaaaaa",
+        #                     persistence=True,
+        #                 ),
+        #             ],
+        #             style={
+        #                 "display": "inline-block",
+        #                 "margin": "15px 0px 0px -20px",
+        #             },
+        #         ),
+        #     ],
+        # ),
     ],
 )
 
@@ -170,9 +171,10 @@ layout = html.Div(
 )
 def import_data(files, time_start, normalize, lhe, n, just_started):
     fig = make_fig()
-    if ctx.triggered_id == "interval-component" or just_started:
+    # if ctx.triggered_id == "interval-component" or just_started:
+    if ctx.triggered_id == "interval-component":
         filegroups = redis_read(write=True)
-        just_started = False
+        # just_started = False
     else:
         filegroups = redis_read(write=False)
 
