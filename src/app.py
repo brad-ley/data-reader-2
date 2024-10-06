@@ -34,10 +34,11 @@ app.layout = html.Div(
 
 if __name__ == "__main__":
     app.run_server(
-        debug=True,
-        # dev_tools_ui=False,
-        # dev_tools_props_check=False,
+        # debug=True,
+        dev_tools_ui=False,
+        dev_tools_props_check=False,
     )
+    server = app.server
     # print("Running at http://localhost:8050/files")
     # app.run_server(
     #     debug=False,
