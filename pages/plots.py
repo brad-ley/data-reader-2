@@ -1,7 +1,7 @@
 import dash
 import dash_daq as daq
 import pandas as pd
-from dash import dcc, html, Input, Output, State, callback, ctx, no_update
+from dash import dcc, html, Input, Output, State, callback, ctx, no_update, ALL
 
 # from dash.exceptions import PreventUpdate
 import plotly.express as px
@@ -23,6 +23,47 @@ margin = dict(l=40, r=40, t=20, b=20)
 
 def make_fig():
     return px.line()
+
+
+def add_switch(item):
+    return html.Div(
+        [
+            # html.Div(
+            #     [f"{item}:"],
+            #     style={
+            #         "display": "inline-block",
+            #         # "margin": "10px 10px 15px 10px",
+            #         # "width": "120px",
+            #     },
+            # ),
+            # for item in items
+            html.Div(
+                [
+                    daq.BooleanSwitch(  # type: ignore
+                        id={
+                            "type": "pattern-switch",
+                            "plot": item,
+                        },
+                        on=True,
+                        color="#aaaaaa",
+                        persistence=True,
+                        persistence_type="local",
+                        label=item,
+                    )
+                ],
+                style={
+                    "display": "inline-block",
+                    "margin": "0px -10px 0px 5px",
+                    # "width": "100px",
+                },
+            ),
+        ],
+        style={
+            "display": "inline-block",
+            "margin": "0px 0px 15px 30px",
+            # "width": "120px",
+        },
+    )
 
 
 def update_fig(fig):
@@ -95,7 +136,9 @@ layout = html.Div(
                 ),
             ]
         ),
-        html.Div(id="plots"),
+        html.Div(id="plots-on"),
+        dcc.Store(id="plots-shown-dict", storage_type="memory"),
+        dcc.Store(id="just-started", data=True, storage_type="memory"),
         # html.Div(
         #     [
         #         html.Div(
@@ -160,25 +203,14 @@ layout = html.Div(
 
 @callback(
     Output("plotter", "figure"),
-    Output("just-started", "data"),
-    Input("files", "data"),
+    Input("plots-shown-dict", "data"),
     Input("x_axis_slider", "value"),
-    Input("normalize", "on"),
-    Input("lhe", "on"),
-    Input("interval-component", "n_intervals"),
-    State("just-started", "data"),
-    # blocking=True,
+    # prevent_initial_call=True,
 )
-def import_data(files, time_start, normalize, lhe, n, just_started):
+def show_data(plots_on, time_start):
     fig = make_fig()
-    # if ctx.triggered_id == "interval-component" or just_started:
-    if ctx.triggered_id == "interval-component":
-        filegroups = redis_read(write=True)
-        # just_started = False
-    else:
-        filegroups = redis_read(write=False)
-
-    if filegroups:
+    filegroups = redis_read(write=False)
+    if plots_on and filegroups:
         for groups in filegroups:  # type: ignore
             for group in groups:
                 dat = pd.DataFrame()
@@ -192,16 +224,9 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                     try:
                         if "Level (%)" in channel.name:
                             channel.name = "LHe (%)"
-                        dat[channel.name] = channel.data
-                        if normalize and ("LHe (%)" in channel.name):
-                            # dat[channel.name] /= dat[channel.name].max()
-                            dat[channel.name] /= 100
-                            # fig = px.line(
-                            #     x=dat["time"][dat["time"] > plot_start],
-                            #     y=dat[channel.name][dat["time"] > plot_start],
-                            # )
-                        if lhe:
-                            if "LHe (%)" in channel.name:
+                        if plots_on:
+                            if plots_on[channel.name]:
+                                dat[channel.name] = channel.data
                                 fig.add_scatter(
                                     x=dat["time"][dat["time"] > plot_start],
                                     y=dat[channel.name][
@@ -211,6 +236,7 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                                     name=channel.name,
                                 )
                         else:
+                            dat[channel.name] = channel.data
                             fig.add_scatter(
                                 x=dat["time"][dat["time"] > plot_start],
                                 y=dat[channel.name][dat["time"] > plot_start],
@@ -222,7 +248,70 @@ def import_data(files, time_start, normalize, lhe, n, just_started):
                         raise Exception(f"{groups} file has issues.")
                         break
 
-        # return fig
-        return update_fig(fig), just_started
+        return update_fig(fig)
     else:
-        return no_update, no_update
+        return no_update
+
+
+@callback(Output("plots-shown-dict", "data"), Input("plots-on", "children"))
+def get_switch_values(allplots):
+    plots_on = {}
+    if allplots:
+        plots_on = dict(
+            [
+                (
+                    ii["props"]["children"][0]["props"]["children"][0][
+                        "props"
+                    ]["id"]["plot"],
+                    ii["props"]["children"][0]["props"]["children"][0][
+                        "props"
+                    ]["on"],
+                )
+                for ii in allplots[0]["props"]["children"]
+            ],
+        )
+    return plots_on
+
+
+@callback(
+    # Output("plotter", "figure"),
+    # Output("just-started", "data"),
+    Output("plots-on", "children"),
+    Input({"type": "pattern-switch", "plot": ALL}, "on"),
+    Input("interval-component", "n_intervals"),
+    Input("x_axis_slider", "value"),
+    # Input("just-started", "data"),
+    State("files", "data"),
+    State("plots-on", "children"),
+)
+def make_switches(plot_switched, n, time_start, files, allplots):
+    switches = set()
+    if ctx.triggered_id == "interval-component":
+        filegroups = redis_read(write=True)
+        # filegroups = redis_read(write=False)
+    else:
+        filegroups = redis_read(write=False)
+
+    if filegroups:
+        for groups in filegroups:  # type: ignore
+            for group in groups:
+                for channel in group.channels:
+                    try:
+                        if "Level (%)" in channel.name:
+                            channel.name = "LHe (%)"
+                        switches.add(channel.name)
+                    except ValueError:
+                        raise Exception(f"{groups} file has issues.")
+                        break
+
+        switches_out = (
+            html.Div(
+                [add_switch(switch) for switch in sorted(list(switches))],
+                style={
+                    "display": "inline-block",
+                },
+            ),
+        )
+        return switches_out
+
+    return no_update

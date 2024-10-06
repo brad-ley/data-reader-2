@@ -28,7 +28,6 @@ app.layout = html.Div(
     [
         dcc.Store(id="files", data={}, storage_type="local"),
         # dcc.Store(id="just-started", data=True, storage_type="session"),
-        dcc.Store(id="just-started", data=True, storage_type="memory"),
         html.H1(
             "Data-logging plotter software",
             style={"margin": "20px 0px 0px 30px"},
@@ -52,7 +51,7 @@ app.layout = html.Div(
 if __name__ == "__main__":
     # app.run_server(debug=True)
     app.run_server(
-        debug=False,
+        debug=True,
         # dev_tools_ui=False,
         # dev_tools_props_check=False,
     )

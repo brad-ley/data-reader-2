@@ -176,6 +176,7 @@ def update_files_list(
         r = requests.get(down_url, stream=True)
         remote_filename = pyrfc6266.requests_response_to_filename(r)
         local_filename = P(__name__).parent.joinpath("data", remote_filename)
+        print(local_filename)
         if P(local_filename).suffix == ".tdms":
             #     with open(local_filename, "wb") as f:
             #         for chunk in r.iter_content(chunk_size=1024):
