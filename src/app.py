@@ -44,7 +44,7 @@ if __name__ == "__main__":
     print("Running at http://localhost:8050/files")
     app.run_server(
         debug=False,
-        # host="0.0.0.0",
+        host="0.0.0.0",
         dev_tools_ui=False,
         dev_tools_props_check=False,
     )
