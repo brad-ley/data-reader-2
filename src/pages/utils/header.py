@@ -3,19 +3,16 @@ import dash
 
 
 pages = {"Files": "/files", "Plots": "/"}
+# pages = dash.page_registry.values()
 
 
 def header(name):
-    print(name)
-    children = [
-        f"name: {page}    " + f"link: {pages[page]}"
-        for page in pages
-        if name.split(".")[-1] != page.lower()
-    ]
-    print(children)
     navbar = dbc.NavbarSimple(
         children=[
             dbc.NavItem(dbc.NavLink(f"{page}", href=f"{pages[page]}"))
+            # dbc.NavItem(
+            #     dbc.NavLink(f"{page['name']}", href=f"{page['relative_path']}")
+            # )
             for page in pages
             if name.split(".")[-1] != page.lower()
         ],
