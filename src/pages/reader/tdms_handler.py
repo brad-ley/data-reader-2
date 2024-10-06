@@ -50,7 +50,6 @@ def read(file, path_or_url, write=True):
         local_filename = P(__file__).parent.parent.parent.parent.joinpath(
             "data", file
         )
-        print(P(local_filename).exists())
         if write or not P(local_filename).exists():
             try:
                 urlparse(path_or_url)

@@ -21,7 +21,7 @@ from pages.utils.header import header
 
 # Initialize Redis client
 redis_client = redis.Redis(
-    host="red-cs11kubtq21c73ekg21g", port=6379, decode_responses=True
+    host="red-cs12sv68ii6s73cutjhg", port=6379, decode_responses=True
 )
 # redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
 # redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
