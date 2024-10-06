@@ -55,9 +55,9 @@ def read(file, path_or_url, write=True):
                 urlparse(path_or_url)
                 r = requests.get(path_or_url, stream=True)
                 remote_filename = pyrfc6266.requests_response_to_filename(r)
-                local_filename = P(__file__).parent.parent.parent.joinpath(
-                    "data", remote_filename
-                )
+                local_filename = P(
+                    __file__
+                ).parent.parent.parent.parent.joinpath("data", remote_filename)
                 with open(local_filename, "wb") as f:
                     for chunk in r.iter_content(chunk_size=2**16):
                         if chunk:  # filter out keep-alive new chunks

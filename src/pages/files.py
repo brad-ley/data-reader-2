@@ -17,6 +17,7 @@ import redis
 import json
 import requests
 import pyrfc6266
+from pages.utils.header import header
 
 # Initialize Redis client
 # redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
@@ -29,9 +30,9 @@ register_page(
     external_stylesheets=[dbc.themes.SLATE],
 )
 
-
 layout = html.Div(
     [
+        header(__name__),
         dcc.Input(
             id="url-path",
             placeholder="Copy and paste GDrive share url",
@@ -124,6 +125,15 @@ def parse_contents(file):
             ),
         ]
     )
+
+
+# @callback(
+#     Output("navbar", "children", allow_duplicate=True),
+#     Input("files", "data"),
+#     prevent_initial_call="initial_duplicate",
+# )
+# def init(_):
+#     return [dbc.NavItem(dbc.NavLink("Pages", href="/"))]
 
 
 @callback(

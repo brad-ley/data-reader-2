@@ -7,6 +7,7 @@ from dash import dcc, html, Input, Output, State, callback, ctx, no_update, ALL
 import plotly.express as px
 
 from pages.reader.data_read import redis_read
+from pages.utils.header import header
 import dash_bootstrap_components as dbc
 
 
@@ -83,9 +84,9 @@ def update_fig(fig):
 
 fig = update_fig(make_fig())
 
-
 layout = html.Div(
     [
+        header(__name__),
         html.Div(
             # [dcc.Graph(id="plotter", figure=fig, style={"height": graph_height})],
             [dcc.Graph(id="plotter", figure=fig)],
@@ -253,7 +254,15 @@ def show_data(plots_on, time_start):
         return no_update
 
 
-@callback(Output("plots-shown-dict", "data"), Input("plots-on", "children"))
+# @callback(Output("navbar", "children"), Input("files", "data"))
+# def init(_):
+#     return [dbc.NavItem(dbc.NavLink("Files", href="/files"))]
+
+
+@callback(
+    Output("plots-shown-dict", "data"),
+    Input("plots-on", "children"),
+)
 def get_switch_values(allplots):
     plots_on = {}
     if allplots:
@@ -270,7 +279,9 @@ def get_switch_values(allplots):
                 for ii in allplots[0]["props"]["children"]
             ],
         )
+
     return plots_on
+    # return plots_on
 
 
 @callback(
