@@ -5,9 +5,9 @@ services:
     ports:
       - "6379:6379"
 
-  data_logger:
+  logger:
     build: ./
-    container_name: data_logger
+    container_name: app
     ports:
       - "8050:8050"
     depends_on:

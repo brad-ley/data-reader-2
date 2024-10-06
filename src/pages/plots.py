@@ -125,7 +125,7 @@ layout = html.Div(
                                 "always_visible": True,
                                 "transform": "expTime",
                             },
-                            updatemode="drag",
+                            updatemode="mouseup",
                             persistence=True,
                         )
                     ],

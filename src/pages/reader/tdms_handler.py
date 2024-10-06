@@ -47,17 +47,18 @@ def read(file, path_or_url, write=True):
     if P(path_or_url).is_dir():
         filename = P(path_or_url).joinpath(file)
     else:
-        local_filename = P(__file__).parent.parent.parent.joinpath(
+        local_filename = P(__file__).parent.parent.parent.parent.joinpath(
             "data", file
         )
+        print(P(local_filename).exists())
         if write or not P(local_filename).exists():
             try:
                 urlparse(path_or_url)
                 r = requests.get(path_or_url, stream=True)
                 remote_filename = pyrfc6266.requests_response_to_filename(r)
-                local_filename = P(
-                    __file__
-                ).parent.parent.parent.parent.joinpath("data", remote_filename)
+                local_filename = local_filename.parent.joinpath(
+                    remote_filename
+                )
                 with open(local_filename, "wb") as f:
                     for chunk in r.iter_content(chunk_size=2**16):
                         if chunk:  # filter out keep-alive new chunks

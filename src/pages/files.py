@@ -20,8 +20,8 @@ import pyrfc6266
 from pages.utils.header import header
 
 # Initialize Redis client
-# redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
-redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
+redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+# redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
 
 register_page(
     __name__,
@@ -185,8 +185,9 @@ def update_files_list(
         # NOTE the stream=True parameter
         r = requests.get(down_url, stream=True)
         remote_filename = pyrfc6266.requests_response_to_filename(r)
-        local_filename = P(__name__).parent.joinpath("data", remote_filename)
-        print(local_filename)
+        local_filename = P(__name__).parent.parent.joinpath(
+            "data", remote_filename
+        )
         if P(local_filename).suffix == ".tdms":
             #     with open(local_filename, "wb") as f:
             #         for chunk in r.iter_content(chunk_size=1024):

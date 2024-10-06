@@ -33,4 +33,4 @@ COPY . .
 EXPOSE 8050
 
 # Run the application.
-CMD python data_logger.py
+CMD python src/app.py
