@@ -3,7 +3,7 @@ import redis
 import json
 
 redis_client = redis.Redis(
-    host="redis://red-cs11kubtq21c73ekg21g", port=6379, decode_responses=True
+    host="red-cs11kubtq21c73ekg21g", port=6379, decode_responses=True
 )
 # redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
 # redis_client = redis.Redis(host="0.0.0.0", port=6379, decode_responses=True)
