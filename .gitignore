@@ -5,6 +5,7 @@ __pycache__/
 *.rdb
 *.tdms
 download
+dump.rdp
 
 # C extensions
 *.so
